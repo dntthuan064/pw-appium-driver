@@ -1,0 +1,50 @@
+{
+  "name": "appium-playwright-driver",
+  "version": "0.0.1",
+  "description": "Appium Playwright Driver",
+  "author": "7una",
+  "keywords": [
+    "playwright",
+    "appium",
+    "driver"
+  ],
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "jest"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "appium": {
+    "mainClass": "Driver",
+    "driverName": "playwright",
+    "automationName": "Playwright",
+    "platformNames": [
+      "chromium",
+      "firefox",
+      "webkit"
+    ]
+  },
+  "dependencies": {
+    "@appium/base-driver": "^9.16.4",
+    "appium-support": "^2.55.0",
+    "asyncbox": "^2.9.4",
+    "base-64": "^1.0.0",
+    "jszip": "^3.10.1",
+    "requireg": "^0.2.2",
+    "webdriverio": "^9.12.2"
+  },
+  "devDependencies": {
+    "@appium/types": "^0.25.2",
+    "@types/base-64": "^1.0.1",
+    "@types/jest": "^29.5.14",
+    "playwright": "^1.39.0",
+    "ts-jest": "^29.3.0",
+    "typescript": "^5.2.2"
+  }
+}
