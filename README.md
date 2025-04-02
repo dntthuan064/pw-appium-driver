@@ -1,6 +1,16 @@
-# Playwright Driver · NPM Version Node.js Version Node.js CI
+# Playwright Driver
 
-Playwright Driver is a W3C WebDriver that allows you to use Playwright through any WebDriver client
+Playwright Driver is a W3C WebDriver that allows you to use Playwright through any WebDriver client. It supports both browser automation and mobile web testing through Appium.
+
+## Features
+
+- Full W3C WebDriver protocol implementation
+- Support for Chromium, Firefox, and WebKit browsers
+- Built-in connection monitoring and auto-recovery
+- Mobile web testing support through Appium integration
+- Viewport emulation and device simulation
+- Browser DevTools protocol access
+- Support for browser-specific capabilities
 
 ## Installation
 
@@ -16,7 +26,7 @@ Driver playwright@<version> successfully installed
   - platformNames: ["chromium","firefox","webkit"]
 ```
 
-Run Appium
+Run Appium:
 
 ```bash
 appium server
@@ -86,6 +96,23 @@ Available drivers:
 | appium:ignoreHTTPSErrors | - | boolean | Whether to ignore HTTPS errors |
 | appium:bypassCSP | - | boolean | Bypasses Content-Security-Policy |
 | appium:defaultBrowserType | - | string | Allows to select a specific browser when platformName is set to android or ios |
+| appium:reconnectOnDisconnect | - | boolean | Whether to attempt reconnection on connection loss |
+| appium:heartbeatInterval | - | number | Interval for connection health checks in milliseconds |
+| appium:connectionTimeout | - | number | Timeout for connection attempts in milliseconds |
+| appium:maxRetries | - | number | Maximum number of connection retry attempts |
+| appium:healthCheckInterval | - | number | Interval between health checks in milliseconds |
+| appium:maxFailedChecks | - | number | Maximum number of failed health checks before recovery |
+| appium:maxReconnectAttempts | - | number | Maximum number of reconnection attempts |
+
+## Connection Monitoring
+
+The driver includes built-in connection monitoring and recovery features:
+
+- Automatic connection health checking
+- Connection loss detection and recovery
+- Configurable retry attempts and intervals
+- Session state preservation during reconnection
+- Graceful session cleanup on unrecoverable failures
 
 ## Commands
 
