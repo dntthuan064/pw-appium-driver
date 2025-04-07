@@ -1,6 +1,6 @@
 {
-  "name": "appium-playwright-driver",
-  "version": "0.0.1",
+  "name": "playwright-driver",
+  "version": "1.0.0",
   "description": "Appium Playwright Driver",
   "author": "7una",
   "keywords": [
