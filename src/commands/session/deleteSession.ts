@@ -7,15 +7,15 @@ export default async function deleteSession(this: any) {
         await page.close().catch(() => {});
       }
     }
-    
+
     // Close the browser
     await this.browser.close().catch(() => {});
     this.browser = undefined;
   }
-  
+
   // Reset the driver state
   this.resetState();
-  
+
   // Call the parent's deleteSession
-  await this.executeCommand('deleteSession');
-} 
+  await this.executeCommand("deleteSession");
+}

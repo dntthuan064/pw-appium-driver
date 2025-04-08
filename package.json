@@ -1,7 +1,7 @@
 {
-  "name": "appium-playwright-driver",
-  "version": "0.0.1",
-  "description": "Appium Playwright Driver",
+  "name": "playwright-driver",
+  "version": "1.0.0",
+  "description": "W3C WebDriver that allows using Playwright through any WebDriver client",
   "author": "7una",
   "keywords": [
     "playwright",
@@ -31,21 +31,23 @@
     ]
   },
   "dependencies": {
-    "@appium/base-driver": "^9.16.4",
+    "@appium/base-driver": "^9.0.0",
     "appium-support": "^2.55.0",
     "asyncbox": "^2.9.4",
     "base-64": "^1.0.0",
     "jszip": "^3.10.1",
-    "playwright": "^1.39.0",
+    "playwright": "^1.40.0",
     "playwright-core": "^1.39.0",
     "requireg": "^0.2.2",
-    "webdriverio": "^9.12.2"
+    "webdriverio": "^8.0.0"
   },
   "devDependencies": {
     "@appium/types": "^0.25.2",
     "@types/base-64": "^1.0.1",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^18.0.0",
     "ts-jest": "^29.3.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0"
   }
 }

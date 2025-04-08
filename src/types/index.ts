@@ -1,5 +1,9 @@
-import type { Browser as PlaywrightCoreBrowser, BrowserContext, Page } from 'playwright-core';
-import type { ServerArgs, Capabilities, Constraints } from '@appium/types';
+import type {
+  Browser as PlaywrightCoreBrowser,
+  BrowserContext,
+  Page,
+} from "playwright-core";
+import type { ServerArgs, Capabilities, Constraints } from "@appium/types";
 
 export interface PlaywrightBrowser extends PlaywrightCoreBrowser {
   close(): Promise<void>;
@@ -25,13 +29,16 @@ export interface PlaywrightPage {
   evaluateHandle(pageFunction: Function | string, ...args: any[]): Promise<any>;
   $(selector: string): Promise<any>;
   $$(selector: string): Promise<any[]>;
-  waitForSelector(selector: string, options?: Record<string, any>): Promise<any>;
+  waitForSelector(
+    selector: string,
+    options?: Record<string, any>,
+  ): Promise<any>;
   setDefaultTimeout(timeout: number): Promise<void>;
   setDefaultNavigationTimeout(timeout: number): Promise<void>;
 }
 
 export interface DriverCaps extends Capabilities<Constraints> {
-  platformName: 'chromium' | 'firefox' | 'webkit' | 'android' | 'ios';
+  platformName: "chromium" | "firefox" | "webkit" | "android" | "ios";
   headless?: boolean;
   deviceName?: string;
   app?: string;

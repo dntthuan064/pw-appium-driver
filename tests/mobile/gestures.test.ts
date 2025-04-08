@@ -1,4 +1,9 @@
-import { swipe, pinch, performTap, performSwipe } from "../../src/commands/mobile/gestures";
+import {
+  swipe,
+  pinch,
+  performTap,
+  performSwipe,
+} from "../../src/commands/mobile/gestures";
 import Driver from "../../src/driver";
 
 jest.mock("../../src/driver");
@@ -63,14 +68,14 @@ describe("Gestures Commands", () => {
   it("should throw an error if Appium client is not initialized for tap", async () => {
     mockDriver.appiumClient = undefined;
     await expect(performTap.call(mockDriver, 100, 200)).rejects.toThrow(
-      "Appium client is not initialized. Gestures can only be performed on mobile devices."
+      "Appium client is not initialized. Gestures can only be performed on mobile devices.",
     );
   });
 
   it("should throw an error if Appium client is not initialized for swipe", async () => {
     mockDriver.appiumClient = undefined;
     await expect(performSwipe.call(mockDriver, 0, 0, 100, 100)).rejects.toThrow(
-      "Appium client is not initialized. Gestures can only be performed on mobile devices."
+      "Appium client is not initialized. Gestures can only be performed on mobile devices.",
     );
   });
 });

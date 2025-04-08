@@ -1,15 +1,28 @@
 import { BaseDriver } from "@appium/base-driver";
 import { fs } from "appium-support";
 import * as path from "path";
-import type { DriverCaps, DriverOpts, DefaultCreateSessionResult, PlaywrightBrowser } from "./types/index";
-import type { W3CDriverCaps, DriverData } from '@appium/types';
+import type {
+  DriverCaps,
+  DriverCapConstraints,
+  DriverOpts,
+  DefaultCreateSessionResult,
+  PlaywrightBrowser,
+} from "../types";
+import type { W3CDriverCaps, DriverData } from "@appium/types";
 import { memoize } from "./utils";
 import commands from "./commands";
 import { remote } from "webdriverio";
-import { PlaywrightConnectionError, isNetworkError, handleConnectionError } from "../lib/utils/connectionErrors";
+import {
+  PlaywrightConnectionError,
+  isNetworkError,
+  handleConnectionError,
+} from "../lib/utils/connectionErrors";
 import { ConnectivityChecker } from "../lib/utils/connectivity";
 import { retry } from "../lib/utils/retry";
-import { ConnectionMonitor, ConnectionState } from "../lib/utils/connectionMonitor";
+import {
+  ConnectionMonitor,
+  ConnectionState,
+} from "../lib/utils/connectionMonitor";
 
 class Driver extends BaseDriver<
   DriverCaps,
@@ -34,105 +47,36 @@ class Driver extends BaseDriver<
     "shadow",
   ];
 
-  public playwright?: typeof import("playwright");
+  public playwright?: typeof import("playwright-core");
   public browser?: PlaywrightBrowser;
   public windows: Record<string, any> = {};
   public currentHandle?: string;
   public elementCache = new Map<string, any>();
-  public appiumClient?: any; // Add Appium client for mobile testing
+  public appiumClient?: any;
+  public W3C_ELEMENT_KEY = "ELEMENT";
   private connectionMonitor: ConnectionMonitor;
   private reconnectionInProgress: boolean = false;
 
   constructor(opts: Partial<DriverOpts> = {}) {
-    const defaultOpts: DriverOpts = {
-      address: '0.0.0.0',
-      allowCors: false,
-      allowInsecure: [],
-      basePath: '',
-      callbackAddress: undefined,
-      callbackPort: 4723,
-      debugLogSpacing: false,
-      defaultCapabilities: {
-        platformName: 'chromium',
-        headless: false
-      },
-      denyInsecure: [],
-      driver: {},
-      driversImportChunkSize: 3,
-      keepAliveTimeout: 600,
-      localTimezone: false,
-      logFile: undefined,
-      logFilters: [],
-      logFormat: 'text',
-      loglevel: 'debug',
-      logNoColors: false,
-      logTimestamp: false,
-      longStacktrace: false,
-      noPermsCheck: false,
-      nodeconfig: undefined,
-      plugin: undefined,
-      pluginsImportChunkSize: 7,
-      port: 4723,
-      relaxedSecurityEnabled: false,
-      requestTimeout: 3600,
-      sessionOverride: false,
-      shutdownTimeout: 5000,
-      sslCertificatePath: undefined,
-      sslKeyPath: undefined,
-      strictCaps: false,
-      tmpDir: undefined,
-      traceDir: undefined,
-      useDrivers: [],
-      usePlugins: [],
-      webhook: undefined
-    };
-
-    super({ ...defaultOpts, ...opts });
-    this.resetState();
+    super(opts as any);
     this.connectionMonitor = ConnectionMonitor.getInstance();
-    
-    // Set up connection event handlers
-    this.connectionMonitor.on('connectionLost', this.handleConnectionLost.bind(this));
-    this.connectionMonitor.on('connectionRestored', this.handleConnectionRestored.bind(this));
-    this.connectionMonitor.on('reconnecting', this.handleReconnecting.bind(this));
-    this.connectionMonitor.on('recoveryFailed', this.handleRecoveryFailed.bind(this));
-    this.connectionMonitor.on('maxReconnectAttemptsExceeded', this.handleMaxReconnectExceeded.bind(this));
+    this.resetState();
   }
 
-  private async handleConnectionLost(sessionId: string, error: Error): Promise<void> {
-    if (sessionId === this.sessionId) {
-      console.error(`Connection lost for session ${sessionId}: ${error.message}`);
-      // Additional cleanup if needed
-    }
+  public async click(elementId: string): Promise<void> {
+    return commands.click.call(this, elementId);
   }
 
-  private async handleConnectionRestored(sessionId: string): Promise<void> {
-    if (sessionId === this.sessionId) {
-      console.log(`Connection restored for session ${sessionId}`);
-      this.reconnectionInProgress = false;
-      // Reinitialize any necessary state
-    }
+  public async setValue(elementId: string, value: string): Promise<void> {
+    return commands.setValue.call(this, elementId, value);
   }
 
-  private async handleReconnecting(sessionId: string, attempt: number): Promise<void> {
-    if (sessionId === this.sessionId) {
-      console.log(`Reconnection attempt ${attempt} for session ${sessionId}`);
-      this.reconnectionInProgress = true;
-    }
+  public async elementDisplayed(elementId: string): Promise<boolean> {
+    return commands.elementDisplayed.call(this, elementId);
   }
 
-  private async handleRecoveryFailed(sessionId: string, error: Error): Promise<void> {
-    if (sessionId === this.sessionId) {
-      console.error(`Recovery failed for session ${sessionId}: ${error.message}`);
-      // Attempt alternative recovery strategies if available
-    }
-  }
-
-  private async handleMaxReconnectExceeded(sessionId: string): Promise<void> {
-    if (sessionId === this.sessionId) {
-      console.error(`Max reconnection attempts exceeded for session ${sessionId}`);
-      await this.deleteSession();
-    }
+  public async getScreenshot(): Promise<string> {
+    return commands.getScreenshot.call(this);
   }
 
   public resetState() {
@@ -143,14 +87,14 @@ class Driver extends BaseDriver<
 
   public getPlaywright = memoize(async () => {
     try {
-      return await import("playwright");
+      return await import("playwright-core");
     } catch {
       try {
         const requireg = await import("requireg");
-        return requireg.default("playwright");
+        return requireg.default("playwright-core");
       } catch {
         throw new Error(
-          `Playwright not found. Please install it via 'npm install playwright' or 'yarn add playwright'.`
+          `Playwright not found. Please install it via 'npm install playwright-core' or 'yarn add playwright-core'.`,
         );
       }
     }
@@ -160,13 +104,13 @@ class Driver extends BaseDriver<
     w3cCapabilities1: W3CDriverCaps<DriverCaps>,
     w3cCapabilities2?: W3CDriverCaps<DriverCaps>,
     w3cCapabilities?: W3CDriverCaps<DriverCaps>,
-    driverData?: DriverData[]
+    driverData?: DriverData[],
   ): Promise<DefaultCreateSessionResult<DriverCaps>> {
     const { sessionId, capabilities } = await super.createSession(
       w3cCapabilities1,
       w3cCapabilities2,
       w3cCapabilities,
-      driverData
+      driverData,
     );
 
     try {
@@ -177,36 +121,45 @@ class Driver extends BaseDriver<
             async () => {
               return await remote({
                 protocol: "http",
-                hostname: capabilities.address || "localhost",
-                port: capabilities.port || 4723,
+                hostname: String(capabilities.address || "localhost"),
+                port: Number(capabilities.port || 4723),
                 path: "/wd/hub",
                 connectionRetryTimeout: 30000,
                 connectionRetryCount: 3,
                 capabilities: {
-                  platformName: capabilities.platformName,
-                  "appium:deviceName": capabilities.deviceName,
-                  "appium:app": capabilities.app,
-                  "appium:automationName": capabilities.automationName || "UiAutomator2",
-                },
+                  platformName: String(capabilities.platformName),
+                  "appium:deviceName": String(capabilities.deviceName),
+                  "appium:app": String(capabilities.app),
+                  "appium:automationName": String(
+                    capabilities.automationName || "UiAutomator2",
+                  ),
+                } as any,
               });
             },
             3,
-            2000
+            2000,
           );
 
           // Start monitoring Appium connection with enhanced options
-          await this.connectionMonitor.monitorConnection(sessionId, this.appiumClient, {
-            healthCheckInterval: capabilities.healthCheckInterval || 30000,
-            maxFailedChecks: capabilities.maxFailedChecks || 3,
-            maxReconnectAttempts: capabilities.maxReconnectAttempts || 5
-          });
-
+          await this.connectionMonitor.monitorConnection(
+            sessionId,
+            this.appiumClient,
+            {
+              healthCheckInterval: Number(
+                capabilities.healthCheckInterval || 30000,
+              ),
+              maxFailedChecks: Number(capabilities.maxFailedChecks || 3),
+              maxReconnectAttempts: Number(
+                capabilities.maxReconnectAttempts || 5,
+              ),
+            },
+          );
         } catch (err) {
           const error = err as Error;
           if (isNetworkError(error)) {
             throw new PlaywrightConnectionError(
               `Failed to connect to Appium server. Please check if the server is running and accessible.`,
-              error
+              error,
             );
           }
           handleConnectionError(error);
@@ -214,12 +167,7 @@ class Driver extends BaseDriver<
       } else {
         // Initialize Playwright for browser testing
         try {
-          this.playwright = await this.getPlaywright();
-          if (!this.playwright) {
-            throw new PlaywrightConnectionError("Failed to initialize Playwright");
-          }
-
-          const browserType = capabilities.platformName;
+          const browserType = String(capabilities.platformName);
           if (!browserType) {
             throw new Error("platformName capability is required");
           }
@@ -228,51 +176,58 @@ class Driver extends BaseDriver<
           if (capabilities.wsEndpoint) {
             try {
               this.browser = await ConnectivityChecker.establishConnection(
-                capabilities.wsEndpoint,
+                String(capabilities.wsEndpoint),
                 {
-                  maxRetries: capabilities.maxRetries || 3,
-                  timeoutMs: capabilities.connectionTimeout || 30000,
-                  debug: capabilities.debug || false,
-                  reconnectOnDisconnect: capabilities.reconnectOnDisconnect !== false,
-                  heartbeatInterval: capabilities.heartbeatInterval || 30000
-                }
+                  maxRetries: Number(capabilities.maxRetries || 3),
+                  timeoutMs: Number(capabilities.connectionTimeout || 30000),
+                  debug: Boolean(capabilities.debug || false),
+                  reconnectOnDisconnect:
+                    capabilities.reconnectOnDisconnect !== false,
+                  heartbeatInterval: Number(
+                    capabilities.heartbeatInterval || 30000,
+                  ),
+                },
               );
             } catch (err) {
               const error = err as Error;
               throw new PlaywrightConnectionError(
                 `Failed to connect to browser via WebSocket: ${error.message}`,
-                error
+                error,
               );
             }
           } else {
             // Regular browser launch with retry
             this.browser = await retry(
               async () => {
-                return await this.playwright![browserType].launch({
-                  headless: capabilities.headless !== false,
-                  args: capabilities.browserArgs || [],
-                  timeout: capabilities.launchTimeout || 30000
-                });
+                return await this.initPlaywright(browserType, capabilities);
               },
               3,
-              2000
+              2000,
             );
           }
 
           // Start monitoring browser connection with enhanced options
           if (this.browser) {
-            await this.connectionMonitor.monitorConnection(sessionId, this.browser, {
-              healthCheckInterval: capabilities.healthCheckInterval || 30000,
-              maxFailedChecks: capabilities.maxFailedChecks || 3,
-              maxReconnectAttempts: capabilities.maxReconnectAttempts || 5
-            });
+            await this.connectionMonitor.monitorConnection(
+              sessionId,
+              this.browser,
+              {
+                healthCheckInterval: Number(
+                  capabilities.healthCheckInterval || 30000,
+                ),
+                maxFailedChecks: Number(capabilities.maxFailedChecks || 3),
+                maxReconnectAttempts: Number(
+                  capabilities.maxReconnectAttempts || 5,
+                ),
+              },
+            );
           }
         } catch (err) {
           const error = err as Error;
           if (isNetworkError(error)) {
             throw new PlaywrightConnectionError(
-              'Failed to initialize connection. Please check your network connection.',
-              error
+              "Failed to initialize connection. Please check your network connection.",
+              error,
             );
           }
           handleConnectionError(error);
@@ -291,18 +246,19 @@ class Driver extends BaseDriver<
   }
 
   public async deleteSession() {
-    const wasConnected = this.sessionId && this.connectionMonitor.isConnected(this.sessionId);
-    
+    const wasConnected =
+      this.sessionId && this.connectionMonitor.isConnected(this.sessionId);
+
     if (this.sessionId) {
       this.connectionMonitor.stopMonitoring(this.sessionId);
     }
-    
+
     if (this.appiumClient) {
       try {
         await this.appiumClient.deleteSession();
       } catch (err) {
         // Log but don't throw to ensure cleanup continues
-        console.error('Error deleting Appium session:', err);
+        console.error("Error deleting Appium session:", err);
       }
       this.appiumClient = undefined;
     }
@@ -312,7 +268,7 @@ class Driver extends BaseDriver<
         await this.browser.close();
       } catch (err) {
         // Log but don't throw to ensure cleanup continues
-        console.error('Error closing browser:', err);
+        console.error("Error closing browser:", err);
       }
       this.browser = undefined;
     }
@@ -322,7 +278,7 @@ class Driver extends BaseDriver<
 
     // Notify if session was previously connected
     if (wasConnected) {
-      console.log('Session successfully cleaned up and closed');
+      console.log("Session successfully cleaned up and closed");
     }
   }
 
@@ -330,8 +286,39 @@ class Driver extends BaseDriver<
     if (!this.sessionId) {
       return false;
     }
-    return !this.reconnectionInProgress && 
-           this.connectionMonitor.getConnectionState(this.sessionId) === ConnectionState.CONNECTED;
+    return (
+      !this.reconnectionInProgress &&
+      this.connectionMonitor.getConnectionState(this.sessionId) ===
+        ConnectionState.CONNECTED
+    );
+  }
+
+  private async initPlaywright(browserType: string, capabilities: DriverCaps) {
+    this.playwright = await this.getPlaywright();
+    if (!this.playwright) {
+      throw new PlaywrightConnectionError("Failed to initialize Playwright");
+    }
+
+    // Type-safe browser selection
+    const supportedBrowsers = ["chromium", "firefox", "webkit"] as const;
+    type SupportedBrowser = (typeof supportedBrowsers)[number];
+
+    if (!supportedBrowsers.includes(browserType as SupportedBrowser)) {
+      throw new Error(
+        `Unsupported browser type: ${browserType}. Must be one of: ${supportedBrowsers.join(", ")}`,
+      );
+    }
+
+    // We know browserType is valid at this point
+    const browser = browserType as SupportedBrowser;
+
+    return await this.playwright[browser].launch({
+      headless: capabilities.headless !== false,
+      args: Array.isArray(capabilities.browserArgs)
+        ? capabilities.browserArgs
+        : [],
+      timeout: Number(capabilities.launchTimeout || 30000),
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 import active from "./active";
-import back from "./back"
+import back from "./back";
 import clear from "./clear";
 import click from "./click";
 import closeWindow from "./window/closeWindow";

@@ -1,8 +1,15 @@
 import Driver from "../../driver";
 
-export async function setGeolocation(this: Driver, latitude: number, longitude: number, altitude?: number) {
+export async function setGeolocation(
+  this: Driver,
+  latitude: number,
+  longitude: number,
+  altitude?: number,
+) {
   if (!this.appiumClient) {
-    throw new Error("Appium client is not initialized. Geolocation can only be set for mobile devices.");
+    throw new Error(
+      "Appium client is not initialized. Geolocation can only be set for mobile devices.",
+    );
   }
 
   await this.appiumClient.setGeoLocation({

@@ -10,7 +10,7 @@ export function memoize<T>(fn: () => Promise<T>): () => Promise<T> {
       return result;
     }
     if (!promise) {
-      promise = fn().then(r => {
+      promise = fn().then((r) => {
         result = r;
         return r;
       });
@@ -38,4 +38,4 @@ export function sleep(ms: number): Promise<void> {
  */
 export function formatError(err: Error): Error {
   return err;
-} 
+}
