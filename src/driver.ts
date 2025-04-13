@@ -9,7 +9,7 @@ import type {
   PlaywrightBrowser,
 } from "../types";
 import type { W3CDriverCaps, DriverData } from "@appium/types";
-import { memoize } from "./utils";
+import { memoize, sleep } from "./utils";
 import commands from "./commands";
 import { remote } from "webdriverio";
 import {
@@ -83,6 +83,10 @@ class Driver extends BaseDriver<
     this.windows = {};
     this.elementCache = new Map();
     this.currentHandle = undefined;
+  }
+
+  public pause(ms: number) {
+    return sleep(ms);
   }
 
   public getPlaywright = memoize(async () => {
