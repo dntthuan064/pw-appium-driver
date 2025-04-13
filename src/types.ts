@@ -32,4 +32,4 @@ export interface PlaywrightElementHandle {
 
 export interface PlaywrightError extends Error {
   name: string;
-} 
+}

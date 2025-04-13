@@ -1,4 +1,7 @@
-import { setGeolocation, getGeolocation } from "../../src/commands/mobile/geolocation";
+import {
+  setGeolocation,
+  getGeolocation,
+} from "../../src/commands/mobile/geolocation";
 import Driver from "../../src/driver";
 
 jest.mock("../../src/driver");
@@ -6,7 +9,9 @@ jest.mock("../../src/driver");
 const mockDriver = new Driver({});
 mockDriver.appiumClient = {
   setGeoLocation: jest.fn(),
-  getGeoLocation: jest.fn().mockResolvedValue({ latitude: 10, longitude: 20, altitude: 0 }),
+  getGeoLocation: jest
+    .fn()
+    .mockResolvedValue({ latitude: 10, longitude: 20, altitude: 0 }),
 };
 
 describe("Geolocation Commands", () => {
@@ -16,7 +21,9 @@ describe("Geolocation Commands", () => {
     mockDriver = {
       appiumClient: {
         setGeoLocation: jest.fn(),
-        getGeoLocation: jest.fn().mockResolvedValue({ latitude: 10, longitude: 20, altitude: 0 }),
+        getGeoLocation: jest
+          .fn()
+          .mockResolvedValue({ latitude: 10, longitude: 20, altitude: 0 }),
       },
     };
   });
@@ -32,8 +39,10 @@ describe("Geolocation Commands", () => {
 
   it("should throw an error if Appium client is not initialized", async () => {
     mockDriver.appiumClient = undefined;
-    await expect(setGeolocation.call(mockDriver, 37.7749, -122.4194)).rejects.toThrow(
-      "Appium client is not initialized. Geolocation can only be set for mobile devices."
+    await expect(
+      setGeolocation.call(mockDriver, 37.7749, -122.4194),
+    ).rejects.toThrow(
+      "Appium client is not initialized. Geolocation can only be set for mobile devices.",
     );
   });
 

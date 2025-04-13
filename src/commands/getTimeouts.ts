@@ -3,6 +3,6 @@ export default async function getTimeouts(this: any) {
   return {
     script: this.timeouts.script,
     pageLoad: this.timeouts.pageLoad,
-    implicit: this.timeouts.implicit
+    implicit: this.timeouts.implicit,
   };
-} 
+}

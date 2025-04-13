@@ -1,4 +1,7 @@
-import { setOrientation, getOrientation } from "../../src/commands/mobile/orientation";
+import {
+  setOrientation,
+  getOrientation,
+} from "../../src/commands/mobile/orientation";
 
 describe("Orientation Commands", () => {
   let mockDriver: any;
@@ -14,7 +17,9 @@ describe("Orientation Commands", () => {
 
   it("should set orientation successfully", async () => {
     await setOrientation.call(mockDriver, "LANDSCAPE");
-    expect(mockDriver.appiumClient.setOrientation).toHaveBeenCalledWith("LANDSCAPE");
+    expect(mockDriver.appiumClient.setOrientation).toHaveBeenCalledWith(
+      "LANDSCAPE",
+    );
   });
 
   it("should get orientation successfully", async () => {
@@ -26,14 +31,14 @@ describe("Orientation Commands", () => {
   it("should throw an error if Appium client is not initialized for setting orientation", async () => {
     mockDriver.appiumClient = undefined;
     await expect(setOrientation.call(mockDriver, "LANDSCAPE")).rejects.toThrow(
-      "Appium client is not initialized. Orientation can only be set for mobile devices."
+      "Appium client is not initialized. Orientation can only be set for mobile devices.",
     );
   });
 
   it("should throw an error if Appium client is not initialized for getting orientation", async () => {
     mockDriver.appiumClient = undefined;
     await expect(getOrientation.call(mockDriver)).rejects.toThrow(
-      "Appium client is not initialized. Orientation can only be retrieved for mobile devices."
+      "Appium client is not initialized. Orientation can only be retrieved for mobile devices.",
     );
   });
 });

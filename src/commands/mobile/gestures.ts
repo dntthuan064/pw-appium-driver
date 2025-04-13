@@ -2,7 +2,9 @@ import Driver from "../../driver";
 
 export async function performTap(this: Driver, x: number, y: number) {
   if (!this.appiumClient) {
-    throw new Error("Appium client is not initialized. Gestures can only be performed on mobile devices.");
+    throw new Error(
+      "Appium client is not initialized. Gestures can only be performed on mobile devices.",
+    );
   }
 
   await this.appiumClient.touchAction({
@@ -11,9 +13,17 @@ export async function performTap(this: Driver, x: number, y: number) {
   });
 }
 
-export async function performSwipe(this: Driver, startX: number, startY: number, endX: number, endY: number) {
+export async function performSwipe(
+  this: Driver,
+  startX: number,
+  startY: number,
+  endX: number,
+  endY: number,
+) {
   if (!this.appiumClient) {
-    throw new Error("Appium client is not initialized. Gestures can only be performed on mobile devices.");
+    throw new Error(
+      "Appium client is not initialized. Gestures can only be performed on mobile devices.",
+    );
   }
 
   await this.appiumClient.touchAction([
@@ -23,7 +33,10 @@ export async function performSwipe(this: Driver, startX: number, startY: number,
   ]);
 }
 
-export async function swipe(driver: Driver, direction: 'up' | 'down' | 'left' | 'right') {
+export async function swipe(
+  driver: Driver,
+  direction: "up" | "down" | "left" | "right",
+) {
   if (!driver.appiumClient) {
     throw new Error("Swipe is only supported on mobile devices.");
   }
@@ -41,9 +54,19 @@ export async function swipe(driver: Driver, direction: 'up' | 'down' | 'left' | 
       id: "finger1",
       parameters: { pointerType: "touch" },
       actions: [
-        { type: "pointerMove", duration: 0, x: actions.startX, y: actions.startY },
+        {
+          type: "pointerMove",
+          duration: 0,
+          x: actions.startX,
+          y: actions.startY,
+        },
         { type: "pointerDown", button: 0 },
-        { type: "pointerMove", duration: 1000, x: actions.endX, y: actions.endY },
+        {
+          type: "pointerMove",
+          duration: 1000,
+          x: actions.endX,
+          y: actions.endY,
+        },
         { type: "pointerUp", button: 0 },
       ],
     },

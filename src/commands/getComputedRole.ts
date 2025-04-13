@@ -3,8 +3,8 @@ export default async function getComputedRole(this: any, elementId: string) {
   if (!element) {
     throw new Error(`Element with id ${elementId} not found in cache`);
   }
-  
+
   return element.evaluate((el: any) => {
-    return el.getAttribute('role') || null;
+    return el.getAttribute("role") || null;
   });
-} 
+}

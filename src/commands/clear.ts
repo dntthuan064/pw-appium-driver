@@ -3,10 +3,10 @@ export default async function clear(this: any, elementId: string) {
   if (!element) {
     throw new Error(`Element with id ${elementId} not found in cache`);
   }
-  
+
   try {
-    await element.fill('');
+    await element.fill("");
   } catch (err: any) {
     throw new Error(`Failed to clear element: ${err.message}`);
   }
-} 
+}

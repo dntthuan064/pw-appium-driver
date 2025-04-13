@@ -3,6 +3,6 @@ export default async function elementEnabled(this: any, elementId: string) {
   if (!element) {
     throw new Error(`Element with id ${elementId} not found in cache`);
   }
-  
+
   return element.isEnabled();
-} 
+}
