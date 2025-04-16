@@ -184,3 +184,96 @@ The driver includes built-in connection monitoring and recovery features:
 | [setWindowRect](src/commands/window/setWindowRect.ts)                            | [here](https://www.w3.org/TR/webdriver/#dfn-set-window-rect)                | Set Window Rect                |
 | [title](src/commands/title.ts)                                                   | [here](https://www.w3.org/TR/webdriver/#dfn-get-title)                      | Get Title                      |
 | [uploadFile](src/commands/uploadFile.ts)                                         | -                                                                           | Upload File                    |
+
+## Usage Examples
+
+### Basic Browser Automation
+
+```javascript
+const wdio = require('webdriverio');
+
+const options = {
+  path: '/wd/hub',
+  port: 4723,
+  capabilities: {
+    platformName: 'web',
+    browserName: 'chromium',
+    'appium:automationName': 'Playwright',
+  },
+};
+
+(async () => {
+  const client = await wdio.remote(options);
+
+  await client.url('https://example.com');
+  const title = await client.getTitle();
+  console.log('Page Title:', title);
+
+  await client.deleteSession();
+})();
+```
+
+### Mobile Web Testing
+
+```javascript
+const wdio = require('webdriverio');
+
+const options = {
+  path: '/wd/hub',
+  port: 4723,
+  capabilities: {
+    platformName: 'android',
+    browserName: 'chromium',
+    'appium:automationName': 'Playwright',
+  },
+};
+
+(async () => {
+  const client = await wdio.remote(options);
+
+  await client.url('https://example.com');
+  const title = await client.getTitle();
+  console.log('Page Title:', title);
+
+  await client.deleteSession();
+})();
+```
+
+## Contribution Guidelines
+
+1. Fork the repository and clone it locally.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Build the project:
+   ```bash
+   npm run build
+   ```
+4. Run tests:
+   ```bash
+   npm test
+   ```
+5. Submit a pull request with your changes.
+
+## Advanced Configuration
+
+- **Custom Capabilities**: Refer to the Playwright documentation for browser-specific capabilities.
+- **Debugging**: Use the `DEBUG` environment variable to enable verbose logging:
+  ```bash
+  DEBUG=appium:* npm start
+  ```
+
+## Testing Instructions
+
+To run the tests:
+
+```bash
+npm test
+```
+
+This will execute all tests in the `tests/` directory.
+
+## Code of Conduct
+
+Please adhere to our [Code of Conduct](CODE_OF_CONDUCT.md) to ensure a welcoming environment for all contributors.
